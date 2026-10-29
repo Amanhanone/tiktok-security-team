@@ -1,17 +1,21 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Camera } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft, HelpCircle, Check, ChevronDown, Eye, EyeOff } from "lucide-react";
 import { authService } from "../../services/authService";
 
 export default function Login() {
   const navigate = useNavigate();
 
+  const [activeTab, setActiveTab] = useState("phone"); // 'phone' | 'email'
+  const [countryCode, setCountryCode] = useState("ET +251");
+  const [saveLoginInfo, setSaveLoginInfo] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+
   const [form, setForm] = useState({
-    phone: "",
+    identifier: "",
     password: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -24,14 +28,23 @@ export default function Login() {
     setError("");
   }
 
+  function handleTabChange(tab) {
+    setActiveTab(tab);
+    setError("");
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
 
-    const phone = form.phone.trim();
+    const identifier = form.identifier.trim();
     const password = form.password;
 
-    if (!phone) {
-      setError("Please enter your mobile number.");
+    if (!identifier) {
+      setError(
+        activeTab === "phone"
+          ? "Please enter your phone number."
+          : "Please enter your email or username."
+      );
       return;
     }
 
@@ -43,7 +56,12 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await authService.login({ phone, password });
+      await authService.login({
+        [activeTab === "phone" ? "phone" : "email"]: identifier,
+        password,
+      });
+
+      // Redirect to dashboard after successful submit
       navigate("/dashboard", { replace: true });
     } catch (err) {
       setError(err.message || "Unable to continue. Please try again.");
@@ -53,53 +71,109 @@ export default function Login() {
   }
 
   return (
-    <main className="min-h-screen w-full bg-[#121212] text-[#f5f5f5] flex flex-col justify-between items-center px-4 py-8 select-none">
-      
-      {/* Top Language Selector */}
-      <div className="w-full max-w-xs text-center">
-        <button
-          type="button"
-          className="text-xs text-[#a8a8a8] hover:text-white transition py-1"
-        >
-          English (US) ▾
-        </button>
-      </div>
+    <main className="min-h-screen w-full bg-white text-slate-900 flex flex-col justify-between max-w-md mx-auto px-5 py-4 font-sans select-none">
+      <div>
+        {/* Top Header Bar */}
+        <header className="flex items-center justify-between py-2 mb-4">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
+            className="p-1 text-black hover:opacity-70 transition"
+          >
+            <ChevronLeft size={28} strokeWidth={2.5} />
+          </button>
+          <h1 className="text-lg font-bold text-black">Log in</h1>
+          <button
+            type="button"
+            aria-label="Help"
+            className="p-1 text-black hover:opacity-70 transition"
+          >
+            <HelpCircle size={24} strokeWidth={2} />
+          </button>
+        </header>
 
-      {/* Center Container */}
-      <div className="w-full max-w-xs flex-1 flex flex-col justify-center items-center space-y-6">
-        
-        {/* Brand Icon / Logo */}
-        <div className="flex flex-col items-center space-y-3">
-          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-tr from-[#f58529] via-[#dd2a7b] to-[#8134af] text-white shadow-lg">
-            <Camera size={40} strokeWidth={1.8} />
-          </div>
-          <h1 className="text-2xl font-semibold tracking-wider font-serif">Instagram</h1>
+        {/* Tab Switcher */}
+        <div className="flex border-b border-gray-200 text-sm font-semibold mb-6">
+          <button
+            type="button"
+            onClick={() => handleTabChange("phone")}
+            className={`flex-1 pb-3 text-center transition-all relative ${
+              activeTab === "phone" ? "text-black" : "text-gray-400"
+            }`}
+          >
+            Phone
+            {activeTab === "phone" && (
+              <span className="absolute bottom-0 left-0 w-full h-[2.5px] bg-black rounded-full" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleTabChange("email")}
+            className={`flex-1 pb-3 text-center transition-all relative ${
+              activeTab === "email" ? "text-black" : "text-gray-400"
+            }`}
+          >
+            Email / Username
+            {activeTab === "email" && (
+              <span className="absolute bottom-0 left-0 w-full h-[2.5px] bg-black rounded-full" />
+            )}
+          </button>
         </div>
 
         {/* Error Notification */}
         {error && (
-          <div role="alert" className="w-full p-3 text-xs text-red-400 bg-red-950/40 border border-red-900 rounded-lg text-center">
+          <div
+            role="alert"
+            className="w-full mb-4 p-3 text-xs text-red-600 bg-red-50 border border-red-200 rounded-xl text-center"
+          >
             {error}
           </div>
         )}
 
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="w-full space-y-3">
-          <div className="mt-4"> 
-            <input
-              id="phone"
-              name="phone"
-              type="text"
-              autoComplete="username"
-              required
-              value={form.phone}
-              onChange={handleChange}
-              placeholder="Phone number"
-              className="w-full bg-[#262626] border border-[#363636] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#a8a8a8] placeholder:text-[#8e8e8e] transition"
-            />
-          </div>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Main Identifier Input (Phone or Email/Username) */}
+          {activeTab === "phone" ? (
+            <div className="flex items-center bg-[#f3f3f5] rounded-xl px-4 py-3.5 focus-within:ring-1 focus-within:ring-gray-400 transition">
+              {/* Country Selector */}
+              <div className="flex items-center gap-1 text-sm font-medium text-slate-800 pr-3 border-r border-gray-300">
+                <span>{countryCode}</span>
+                <ChevronDown size={16} className="text-slate-600" />
+              </div>
 
-          <div className="relative mt-4">
+              {/* Phone Input */}
+              <input
+                id="identifier"
+                name="identifier"
+                type="tel"
+                autoComplete="tel"
+                required
+                value={form.identifier}
+                onChange={handleChange}
+                placeholder="Phone number"
+                className="w-full bg-transparent pl-3 text-sm text-slate-900 outline-none placeholder:text-gray-400"
+              />
+            </div>
+          ) : (
+            <div className="bg-[#f3f3f5] rounded-xl px-4 py-3.5 focus-within:ring-1 focus-within:ring-gray-400 transition">
+              {/* Email / Username Input */}
+              <input
+                id="identifier"
+                name="identifier"
+                type="text"
+                autoComplete="username"
+                required
+                value={form.identifier}
+                onChange={handleChange}
+                placeholder="Email or username"
+                className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-gray-400"
+              />
+            </div>
+          )}
+
+          {/* Password Input Field */}
+          <div className="relative bg-[#f3f3f5] rounded-xl px-4 py-3.5 focus-within:ring-1 focus-within:ring-gray-400 transition">
             <input
               id="password"
               name="password"
@@ -108,54 +182,54 @@ export default function Login() {
               value={form.password}
               onChange={handleChange}
               placeholder="Password"
-              className="w-full bg-[#262626] border border-[#363636] rounded-xl px-4 py-3 pr-10 text-sm text-white outline-none focus:border-[#a8a8a8] placeholder:text-[#8e8e8e] transition"
+              className="w-full bg-transparent pr-8 text-sm text-slate-900 outline-none placeholder:text-gray-400"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#a8a8a8] hover:text-white transition"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-slate-700 transition"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full mt-30 rounded-xl bg-[#0095f6] hover:bg-[#1877f2] px-4 py-3 text-sm font-semibold text-white transition disabled:opacity-50 shadow-md"
-          >
-            {loading ? "Logging in..." : "Log in"}
-          </button>
+          {/* Hidden Submit Button to handle Enter Key press */}
+          <button type="submit" className="hidden" />
         </form>
+      </div>
 
-        {/* Forgot Password Link */}
-        <div className="text-center">
-          <Link
-            to="/forgot-password"
-            className="text-xs text-[#e0e0e0] hover:underline"
+      {/* Bottom Section: Save Login Info + Submit Button */}
+      <div className="space-y-5 pb-6 mt-6">
+        {/* Save login info checkbox */}
+        <label className="flex items-start gap-2.5 text-xs text-gray-600 cursor-pointer select-none">
+          <button
+            type="button"
+            role="checkbox"
+            aria-checked={saveLoginInfo}
+            onClick={() => setSaveLoginInfo(!saveLoginInfo)}
+            className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition ${
+              saveLoginInfo
+                ? "bg-[#ff3b5c] text-white"
+                : "border border-gray-300 bg-white"
+            }`}
           >
-            Forgot password?
-          </Link>
-        </div>
-      </div>
+            {saveLoginInfo && <Check size={11} strokeWidth={3} />}
+          </button>
+          <span className="leading-tight">
+            Save login info to log in automatically next time.
+          </span>
+        </label>
 
-      {/* Bottom Footer / Sign Up */}
-      <div className="w-full max-w-xs pt-6 pb-2 text-center space-y-4">
-        <Link
-          to="/register"
-          className="flex w-full items-center justify-center rounded-xl border border-[#363636] bg-transparent px-4 py-3 text-xs font-semibold text-[#0095f6] hover:bg-[#262626]/40 transition"
+        {/* Submit / Continue Button */}
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="w-full rounded-full bg-[#ff8fa0] hover:bg-[#ff3b5c] active:bg-[#e02d4c] py-3.5 text-sm font-semibold text-white transition disabled:opacity-60 shadow-none"
         >
-          Create new account
-        </Link>
-
-        {/* Meta Branding Footer */}
-        <div className="flex items-center justify-center gap-1.5 text-xs font-bold tracking-widest text-[#737373] pt-2">
-          <span>∞</span>
-          <span>Meta</span>
-        </div>
+          {loading ? "Logging in..." : "Continue"}
+        </button>
       </div>
-
     </main>
   );
 }
